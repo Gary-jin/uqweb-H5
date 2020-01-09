@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>填写联系信息</title>
+    <script>
+        (function(doc, win) {
+          var docEl = doc.documentElement,
+          resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+          recalc = function() {
+            var clientWidth = docEl.clientWidth;
+            if(!clientWidth) return;
+            if(clientWidth >= 750) {
+              docEl.style.fontSize = '100px';
+            } else {
+              docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+            }
+          };
+          if(!doc.addEventListener) return;
+          win.addEventListener(resizeEvt, recalc, false);
+          doc.addEventListener('DOMContentLoaded', recalc, false);
+        })(document, window);
+    </script>
+    <link rel="stylesheet" href="../../css/common.css?i=1128">
+    <link rel="stylesheet" href="../../css/libs/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../../css/libs/swiper_min.css"> -->
+    <!-- <link rel="stylesheet" href="../../js/mint-ui/style.css">   -->
+    <link rel="stylesheet" href="../../js/confirm/confirm.css">
+    <script src="https://native.youquanyun.com/uqWeb/js/libs/dsbridge.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="../../js/libs/mescroll/mescroll.min.css" > -->
+    <style media="screen">
+	html,body { background: #f7f7f7;font-family:PingFang SC;}
+       .header {
+            position: relative;
+            width: 100%;
+            height: 0.88rem;
+            color:rgba(47,47,47,1);
+            line-height: 0.88rem;
+            font-size: 0.34rem;
+            font-weight:bold;
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            background: #FFFFFF;
+            border-bottom: 0.01rem solid #EEEEEE;
+        }
+
+        .header .left {
+          display: flex;align-items: center; justify-content: center;
+            position: absolute;
+            bottom: 0;
+            left: .3rem;
+            height: 0.88rem;
+        }
+        .header .left .back{
+            height: .32rem;
+            width: 0.18rem;
+            background: url(../../image/back1.png) no-repeat;
+            background-size: cover;
+        }
+        .user-content{
+          width:7.5rem;
+          height:2.21rem;
+          background:rgba(255,255,255,1);
+          margin-top: 0.2rem;
+        }
+        .user-content p{
+          height: 1.1rem;
+          width: 6.9rem;
+          margin: 0 auto;
+          line-height: 1.1rem;
+          font-size:.3rem;
+          font-weight:500;
+          color:rgba(47,47,47,1);
+        }
+        .user-content p:nth-child(1){
+          border-bottom: 1px solid #EEEEEE;
+        }
+        .user-content p input{
+          color: #999999;
+        }
+        .message{
+          height: 0.82rem;
+          padding-left: 0.3rem;
+          font-size:.26rem;
+          font-weight:500;
+          color:rgba(217,33,33,1);
+          line-height:.82rem;
+        }
+        .btn-submit{
+          width:5.7rem;
+          height:.88rem;
+          background:linear-gradient(270deg,rgba(217,33,33,1),rgba(255,101,73,1));
+          border-radius:.1rem;
+          text-align: center;
+          line-height: 0.88rem;
+          font-size:.34rem;
+          font-family:PingFang SC;
+          font-weight:500;
+          color:rgba(255,255,255,1);
+          margin: 3.18rem auto 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="vue-app">
+        <div class="header">
+            <div  v-if='isShowBackBtn' class="left">
+                <div class="back" @click="onBack"></div>
+            </div>
+            <div class="center">填写联系信息</div>
+        </div>
+        <div class="user-content">
+          <p>姓名：<input type="text" placeholder="请输入您的姓名" v-model="username"></p>
+          <p>电话：<input type="text" placeholder="请输入您的电话号码" v-model="phone"></p>
+        </div>
+        <p class="message">*请填写您的真实信息，方便平台跟您联系发货事宜。</p>
+        <div class="btn-submit" @click="submit">提交</div>
+        <confirm :show="show" :content="con" @on-confirm="onConfirm" @on-cancel="onCancel"></confirm>        
+    </div>  
+</body>
+
+<script src="https://native.youquanyun.com/uqWeb/js/libs/axios.js"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/utils.js" charset="utf-8"></script>
+<script src="../../js/libs/common.js" charset="utf-8"></script>
+
+<!-- 线上路径，线上需开启 -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/http.js?i=201911211908?201910311956"></script> -->
+<!-- 本地调试路径 -->
+<script src="../../js/http.js?i=201911211908"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/vue_min.js" charset="utf-8"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/qs.js" charset="utf-8"></script>
+<!-- <script src="../../js/mint-ui/index.js"></script> -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/libs/swiper_min.js?201906051207" charset="utf-8"></script> -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/libs/vue_awesome_swiper.js" charset="utf-8"></script> -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/libs/mescroll/mescroll.min.js"></script> -->
+<script src="../../js/confirm/confirm.js"></script>
+<script type="text/javascript">
+    // Vue.use(window.VueAwesomeSwiper)
+    var vueObj = new Vue({
+        el: '#vue-app',
+        data: {
+          show:false,
+          con:'请确认您输入的信息正确',
+          username:'',
+          phone:''
+        },
+        methods: {
+          submit(){
+            if (!this.username) {
+			        dsBridge.call("toast", {msg: '姓名不能为空'})
+              return
+            }
+            if (!this.phone) {
+			        dsBridge.call("toast", {msg: '手机号不能为空'})
+              return
+            }
+            var reg = 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/
+            if (!reg.test(this.phone)) {
+			        dsBridge.call("toast", {msg: '手机号格式不对'})
+              return
+            }
+            this.show = true
+          },
+          onConfirm(){
+            this.show = false
+            // 提交确认后请求接口
+            Http.post(Http.HOST+Http.API_URL.HOMENESHOW, {username:this.username,mobile:this.phone}, true).then(function(res) {
+                if (res.code === 0) {
+                  dsBridge.call('closeWin')
+                } else {
+                  dsBridge.call("toast", {msg: res.msg});
+                }
+            })
+          },
+          onCancel(){
+            this.show = false
+          },
+          // 返回
+          onBack: function (ret, err) {
+            dsBridge.call('closeWin')
+          },
+        },
+    })
+</script>
+
+</html>

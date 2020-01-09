@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>领取记录</title>
+    <script>
+        (function(doc, win) {
+          var docEl = doc.documentElement,
+          resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+          recalc = function() {
+            var clientWidth = docEl.clientWidth;
+            if(!clientWidth) return;
+            if(clientWidth >= 750) {
+              docEl.style.fontSize = '100px';
+            } else {
+              docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+            }
+          };
+          if(!doc.addEventListener) return;
+          win.addEventListener(resizeEvt, recalc, false);
+          doc.addEventListener('DOMContentLoaded', recalc, false);
+        })(document, window);
+    </script>
+    <link rel="stylesheet" href="../../css/common.css?i=1128">
+    <link rel="stylesheet" href="../../css/libs/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../../css/libs/swiper_min.css"> -->
+    <!-- <link rel="stylesheet" href="../../js/mint-ui/style.css">   -->
+    <link rel="stylesheet" href="../../js/confirm/confirm.css">
+    <script src="https://native.youquanyun.com/uqWeb/js/libs/dsbridge.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../js/libs/mescroll/mescroll.min.css" >
+    <style media="screen">
+	html,body { background: #f7f7f7;font-family:PingFang SC;}
+       .header {
+            position: relative;
+            width: 100%;
+            height: 0.88rem;
+            color:rgba(47,47,47,1);
+            line-height: 0.88rem;
+            font-size: 0.34rem;
+            font-weight:bold;
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            background: #FFFFFF;
+            border-bottom: 0.01rem solid #EEEEEE;
+        }
+
+        .header .left {
+          display: flex;align-items: center; justify-content: center;
+            position: absolute;
+            bottom: 0;
+            left: .3rem;
+            height: 0.88rem;
+        }
+        .header .left .back{
+            height: .32rem;
+            width: 0.18rem;
+            background: url(../../image/back1.png) no-repeat;
+            background-size: cover;
+        }
+        .list{
+            width: 100%;
+            height: 100%;
+        }
+        .list li{
+            margin:0.2rem auto 0;
+            width:7.1rem;
+            height:3.01rem;
+            background:rgba(255,255,255,1);
+            box-shadow:0px 0px .1rem 0px rgba(219,219,219,0.8);
+            border-radius:.1rem;
+        }
+        .list li .list-top{
+          height: 2.1rem;
+          padding: 0 0.28rem;
+        }
+        .list li .list-top .top-title{
+          height: 0.9rem;
+          display: flex;
+          justify-content: space-between;
+          font-size:.3rem;
+          font-weight:bold;
+          color:rgba(47,47,47,1);
+          align-items: center;
+        }
+        .list li .list-top .top-title .status{
+          font-size: 0.28rem;
+          color: #D92121;
+        }
+        .list li .list-top .top-info{
+          height: 0.9rem;
+          display: flex;
+          align-items: center;
+        }
+        .list li .list-top .top-info img{
+          height: 0.9rem;
+          width: 0.9rem;
+          margin-right: 0.32rem;
+        }
+        .list li .list-top .top-info p{
+          font-size:.3rem;
+          font-weight:bold;
+          color:#2F2F2F;
+        }
+        .list li .list-top .top-info p span{
+          color: #D92121;
+        }
+        .list li .list-bottom{
+          height: 0.89rem;
+          border-top: 1px solid #eee;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 0.28rem;
+        }
+        .list li .list-bottom .time{
+          font-size:.26rem;
+          font-weight:500;
+          color:rgba(102,102,102,1);
+        }
+        .list li .list-bottom .apply-btn{
+          width:1.36rem;
+          height:.52rem;
+          background:rgba(217,33,33,1);
+          border-radius:.26rem;
+          font-size:.28rem;
+          font-weight:500;
+          color:rgba(255,255,255,1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .list li .list-bottom .look-btn{
+          background: #B5B5B5;
+        }
+        #mescroll{
+            width: 100%;
+            position: fixed;
+            top: 0.88rem;
+            bottom: 0;
+            height: auto;
+            background: #FFFFFF; 
+        }
+    </style>
+</head>
+
+<body>
+    <div id="vue-app" class="videoIndex">
+        <div class="header">
+            <div  v-if='isShowBackBtn' class="left">
+                <div class="back" @click="onBack"></div>
+            </div>
+            <div class="center">领取记录</div>
+        </div>
+        <div class='common-warp mescroll' ref="mescroll" id="mescroll" >
+          <ul class="list" id="empty" v-if="dataList && dataList.length > 0">
+            <li v-for="(item, index) in dataList" :key="index">
+              <div class="list-top">
+                <div class="top-title">
+                  <p>{{item.title}}</p>
+                  <p class="status" v-if="item.status == 0">待发放</p>
+                  <p class="status" v-if="item.status == 1">已发放</p>
+                  <p class="status" v-if="item.status == 2">拒绝发放</p>
+                  <p class="status" v-if="item.status == 3">待申请</p>
+                  <p class="status" v-if="item.status == 4">待审核</p>
+                  <p class="status" v-if="item.status == 5">已发放</p>
+                </div>
+                <div class="top-info">
+                  <img v-if="item.type == 1" src="../../image/newactivities/money.png">
+                  <img v-if="item.type == 2" src="../../image/newactivities/entity.png">
+                  <p v-if="item.type == 1"><span>{{item.reward}}</span>元现金奖励</p>
+                  <p v-if="item.type == 2">{{item.reward}}</p>
+                </div>
+              </div>
+              <div class="list-bottom">
+                <p class="time">{{item.created_at}}</p>
+                <div class="apply-btn" v-if="item.status == 3" @click="toApply">去申请</div>
+                <div class="apply-btn look-btn" v-if="item.status == 4" @click="look(item.username,item.mobile)">已填写</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <confirm :show="show" :content="con" :showconcel="false" @on-confirm="onConfirm" confirmtext="我知道啦"></confirm>        
+    </div>  
+</body>
+
+<script src="https://native.youquanyun.com/uqWeb/js/libs/axios.js"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/utils.js" charset="utf-8"></script>
+<script src="../../js/libs/common.js" charset="utf-8"></script>
+
+<!-- 线上路径，线上需开启 -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/http.js?i=201911211908?201910311956"></script> -->
+<!-- 本地调试路径 -->
+<script src="../../js/http.js?i=201911211908"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/vue_min.js" charset="utf-8"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/qs.js" charset="utf-8"></script>
+<!-- <script src="../../js/mint-ui/index.js"></script> -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/libs/swiper_min.js?201906051207" charset="utf-8"></script> -->
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/libs/vue_awesome_swiper.js" charset="utf-8"></script> -->
+<script src="https://native.youquanyun.com/uqWeb/js/libs/mescroll/mescroll.min.js"></script>
+<script src="../../js/confirm/confirm.js"></script>
+<script type="text/javascript">
+    // Vue.use(window.VueAwesomeSwiper)
+    var vueObj = new Vue({
+        el: '#vue-app',
+        data: {
+          dataList:[],
+          show:false,
+          con:'',
+        },
+        methods: {
+          look(username,mobile){
+            this.con = '姓名：' + username + '</br>电话：' + mobile
+            this.show = true
+          },
+          onConfirm(){
+            this.show = false
+          },
+          toApply(){
+            dsBridge.call("open", {url: Http.HOST+'/uqWeb/html/newactivities/user_info.html',type: 'web'})
+          },
+          // 返回
+          onBack: function (ret, err) {
+            dsBridge.call('closeWin')
+          },
+          reset () {
+            this.dataList = []
+            // this.mescrollUp.page.num = 1
+            this.mescroll.setPageNum(1);
+            this.mescroll.resetUpScroll()
+          },
+          upCallback (page) {
+            var _this = this
+            //联网请求
+            Http.post(Http.HOST+Http.API_URL.V2HOMENEWREWARDLIST,{ page:page.num},true).then(function(response){
+              if (response.code == 0) {
+                //请求的列表数据
+                var arr = response.data
+                //如果是第一页需手动置空列表
+                if (page.num == 1) _this.dataList = [];
+                //把请求到的数据添加到列表
+                _this.dataList = _this.dataList.concat(arr);
+                //数据渲染成功后,隐藏下拉刷新的状态
+                _this.$nextTick(function(){
+                  _this.mescroll.endSuccess(arr.length);
+                })
+              }
+            }).catch(function(e) {
+              //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+              _this.mescroll.endErr();
+            })
+          },
+        },
+        mounted: function () {
+          this.mescroll = new MeScroll(this.$refs.mescroll, { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到				
+            down: {
+              
+            },
+            
+            up: {
+              callback: this.upCallback, //上拉加载的回调
+              //以下是一些常用的配置,当然不写也可以的.
+              page: {
+                num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+                size: 10 //每页数据条数,默认10
+              },
+              htmlNodata: '<p class="upwarp-nodata">-- END --</p>',
+              htmlLoading: '',
+              noMoreSize: 5,
+              toTop: {
+                src: '../../image/back_top.png',
+                offset: 1000
+              },
+              empty: {
+                warpId: 'empty',
+                icon: imgConfig.NODATA_IMG || '../../image/kong.png',
+                tip: imgConfig.NODATA_TEXT || '暂无相关数据~'
+              }
+            }
+          });
+          var _this = this
+          document.addEventListener("visibilitychange", function() { 
+              if(document.hidden) {
+                  // 页面被挂起
+              }else {
+                  // 页面呼出
+                  _this.reset()
+              }
+          })
+        },
+        
+        
+    })
+</script>
+
+</html>

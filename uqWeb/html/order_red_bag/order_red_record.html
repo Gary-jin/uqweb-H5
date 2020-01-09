@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>领取记录</title>
+	<script>
+        (function(doc, win) {
+          var docEl = doc.documentElement,
+          resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+          recalc = function() {
+            var clientWidth = docEl.clientWidth;
+            if(!clientWidth) return;
+            if(clientWidth >= 750) {
+              docEl.style.fontSize = '100px';
+            } else {
+              docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+            }
+          };
+          if(!doc.addEventListener) return;
+          win.addEventListener(resizeEvt, recalc, false);
+          doc.addEventListener('DOMContentLoaded', recalc, false);
+        })(document, window);
+    </script>
+    <link rel="stylesheet" href="../../css/libs/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../../js/libs/mescroll/mescroll.min.css" >
+  <link rel="stylesheet" href="../../css/common.css?i=1128">  
+	<script src="https://native.youquanyun.com/uqWeb/js/libs/dsbridge.js"></script>
+    <script src="https://native.youquanyun.com/uqWeb/js/libs/axios.js"></script>
+    <script src="https://native.youquanyun.com/uqWeb/js/utils.js" charset="utf-8"></script>
+    <style media="screen">
+		html,body{background:#f7f7f7}
+        #header {
+            position: relative; 
+            width: 100%;
+            height: 0.88rem;
+			background:#fff
+        }
+
+        #header .left {
+          display: flex;align-items: center; justify-content: center;font-size: .36rem; color: #666; z-index: 1;
+            position: absolute;
+            bottom: 0;
+            left: .2rem;
+            height: 0.88rem;
+        }
+
+        #header .center {
+            position: relative;
+			font-size: 16px;
+            width: 100%;
+            height: 0.88rem;line-height: 0.88rem;
+            text-align: center;
+        }
+
+        #header .right {
+            position: absolute; font-size: .3rem; color: #666;
+            bottom: 0;
+            right: .26rem; line-height: 0.88rem;
+        }
+		.list .item { padding: .3rem .5rem; display: flex; align-items: center; justify-content: space-between; background: white;border-bottom: 1px solid  #E3E3E3;}
+		.list .item:not(:last-child) { border-bottom: 1px solid #eee; }
+		.list .item .left {display: flex; flex-direction: column; height: .7rem; justify-content: space-between;}
+		.list .item .left p { font-size: .3rem; font-weight:500; }
+		.list .item .left span { font-size: .24rem; color: #999;}
+		.list .item .right { font-size: .34rem; font-weight:bold; max-width: 3rem;color: #D92121;}
+		.list .push-status { font-size: .26rem; color: #ccc; text-align: center;}
+		.blank { text-align: center; font-size: .3rem; color: #999; padding-top: .6rem; }
+		.blank img { width: 3rem;}
+		#mescroll{
+			width: 100%;
+			position: fixed;
+			top: 1.68rem;
+			bottom: 0;
+			height: auto;
+		}
+		/* .common-hight{height:50px} */
+    .red-num{
+      height: 0.8rem;
+      padding: 0 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.26rem;
+      font-weight: 500;
+      color: #fff;
+      background: #AAAAAA;
+    }
+    </style>
+</head>
+
+<body>
+  <div id="vue-app" >
+    <div id="header">
+      <div class="left" @click="onBack()"><i class="iconfont icon-back"></i></div>
+        <div class="center">领取记录</div>
+    </div>
+  <!-- <div class='common-hight'></div> -->
+  <div class="red-num">
+    <p>订单红包剩余次数：{{order_red_times}}</p>
+    <p>邀请红包剩余次数：{{invite_red_times}}</p>
+  </div>
+	<div class='common-warp mescroll' ref="mescroll" id="mescroll" v-cloak>
+		<div class="list"  id="d26">
+		  <div class="item" v-for="(item, index) in list" :key="index">
+        <div class="left">
+          <p>{{item.title}}</p>
+          <!-- <span>{{new Date(item.created_at*1000).toLocaleString('zh', {hour12: false})}}</span> -->
+          <span>{{item.time}}</span>          
+        </div>
+        <div class="right text-overflow_1-xzh">{{item.credit}}元</div>
+		  </div>
+		</div>
+	</div>
+  </div>
+</body>
+
+<!-- <script src="https://native.youquanyun.com/uqWeb/js/http.js?i=201911211908?201910112246"></script> -->
+<script src="../../js/http.js"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/vue_min.js" charset="utf-8"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/qs.js" charset="utf-8"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/mescroll/mescroll.min.js"></script>
+<script type="text/javascript">
+    window.vueObj = new Vue({
+        el: '#vue-app',
+        data: {
+          grabNum: 0,
+		      page:{num: 0},
+          hasMore: true,
+          pageLimit: 10,
+          utils: utils,
+          list: [],
+          appName: '',
+          mescroll: null,
+          order_red_times:'',
+          invite_red_times:''
+        },
+        mounted: function(){
+		      this.appName = dsBridge.call("receiveParams", 'appName')
+          //this.getList();
+          this.mescroll = new MeScroll(this.$refs.mescroll, { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到				
+            down: {
+              auto: false,
+              callback: this.refresh
+            },
+            up: {
+              callback: this.upCallback,
+              page: {
+                num: 0
+              },
+              htmlNodata: '<p class="upwarp-nodata">—— 我也是有底线的 ——</p>',
+              noMoreSize: 5,
+              empty: {
+                warpId: 'd26',
+                icon: imgConfig.NODATA_IMG || '../../image/kong.png',
+                tip: imgConfig.NODATA_TEXT || '暂无相关数据~'
+              }
+            }
+          });	
+        },
+        methods: {
+          onBack: function(ret, err){
+            dsBridge.call('closeWin')
+          },
+          upCallback: function(page, mescroll){
+            Http.post(Http.HOST+Http.API_URL.V2RECIVIEREDLIST,{page: page.num},true,true).then((res)=>{
+              if(res.code === 0){
+                this.order_red_times = res.data.order_red_times
+                this.invite_red_times = res.data.invite_red_times
+                let arr = res.data.receiveList.lenght < 1 ? [] : res.data.receiveList
+                if (page.num === 1) this.list = []
+                this.list = this.list.concat(arr)
+                this.$nextTick(() => {
+                  mescroll.endSuccess(arr.length)
+                })
+              }
+            }).catch((e)=> {
+              //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+              this.mescroll.endErr();
+            })
+          },
+          getList: function(refresh) {
+            var that = this;
+            if (!this.hasMore) return;
+            if (refresh){
+              this.page = 1;
+            } else {
+              this.page++;
+            }
+            Http.post(Http.HOST+Http.API_URL.USERGRABCOUPONLOG,{page: this.page},true).then((res)=>{
+              if(res.code === 0){
+                this.list = res.data
+                let arr = res.data.lenght < 1 ? [] : res.data
+                if (page.num === 1) this.list = []
+                this.list = this.list.concat(arr)
+                this.$nextTick(() => {
+                  mescroll.endSuccess(res.data.length, true)
+                })
+              }
+            })
+          }
+        }
+    })
+</script>
+
+</html>

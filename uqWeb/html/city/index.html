@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>城市列表</title>
+    <meta content="telephone=no" name="format-detection" />
+    <link href="css/common.css?i=01021706" rel="stylesheet">
+    <link href="css/term.css" rel="stylesheet">
+    <script src="https://native.youquanyun.com/uqWeb/js/libs/dsbridge.js"></script>
+    <style>
+        html,body{
+            height: 100vh;
+        }
+        .city-content{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            /* position: relative; */
+        }
+        .title_box{
+            /* position: absolute;
+            top: 0; */
+            width: 100%;
+            background: #fff;
+            z-index: 9;
+            height: 0.84rem;
+        }
+        .title {
+            height: .44rem;
+            display: flex;
+            align-items: center;
+        }
+        .title>img {
+            height: .16rem;
+            width: auto;
+            margin-left: .22rem;
+            margin-right: 1.21rem;
+        }
+        .title_text {
+            width: .84rem;
+            height: .11rem;
+            font-size: .18rem;
+            font-weight: bold;
+            color: rgba(47, 47, 47, 1);
+            line-height: .18rem;
+            white-space: nowrap;
+            -webkit-user-select: none;
+        }
+        .title_input{
+            width: 100%;
+            height: .4rem;
+            display: flex;
+            align-items: center;
+        }
+        .title_input input{
+            background: #e5e5e5;
+            width: 70%;
+            height: .3rem;
+            margin-left: .22rem;
+            border-radius: .2rem;
+            padding-left: .15rem;
+            font-size: .12rem;
+        }
+        .order_address{
+            height: .22rem;
+            line-height: .2rem;
+            margin-left: .22rem;
+            outline: none;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="city-content">
+        <div class="title_box" >
+           <div class="title">
+                <img src="./../../image/back.png" alt="" id="onBack">
+                <div class="title_text">城市列表</div>
+           </div>
+           <div class="title_input"> 
+               <input class="titi_in" type="text" placeholder="请输入城市">
+           </div>
+        </div>
+        <div class="content">
+            <!-- 没有匹配到数据 -->
+            <div class="search_tit" style="display: none;">
+                <div class="term_box">
+                    <div class="term_item" id="search_core">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="term">
+                <div id="hotcity">
+                    <!-- <div style="margin-left: .22rem;">当前定位：</div> -->
+                </div>
+                <!-- 城市列表 -->
+                <div id="city_core">
+                <!-- <div class="term_box">
+                        <h1>A</h1>
+                        <div class="term_item">
+                            <p>ssf</p>
+                        </div>
+                    </div> -->
+                </div>
+                <!-- 首字母列表 -->
+                <div class="term_nav">
+                    <ul id="letter_nav">
+                        <!-- <li class="on">A<span>A</span></li>
+                            <li>B<span>B</span></li> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+<script id="core_show" type="text/x-dot-template">
+    {{~it.hotcity:value:ind}}
+        <div class="order_address">当前定位：<span class="address_span"></span></div>
+    {{~}}
+</script>    
+<!-- <ul>
+    <li>★<span>★</span></li>
+</ul> -->
+<script id="core_show1" type="text/x-dot-template">
+    {{~it.zimu:value:ind}}
+        <li>{{=value.name}}<span>{{=value.name}}</span></li>
+    {{~}}
+</script>
+<script id="core_show2" type="text/x-dot-template">
+    
+    {{~it.allcity:value:ind}}
+        <div class="term_box">
+            <h1>{{=value.name}}</h1>
+            <div class="term_item">
+            {{~value.cities:val:i}}
+                    <p>{{=val.name}}</p>
+            {{~}}
+            </div>
+        </div>    
+    {{~}}
+</script>
+<script src="./js/jquery-1.9.1.min.js"></script>
+<script src="js/resize.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/libs/axios.js"></script>
+<script src="../../js/libs/common.js"></script>
+<script src="./js/doT.min.js"></script>
+<script src="../../js/http.js?i=201911211908"></script>
+<script src="https://native.youquanyun.com/uqWeb/js/utils.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: "./js/city.json",
+                dataType: "json",
+                type: "get",
+                success: function (data) {
+                    // console.log(data.allcity)
+                    //调用模板
+                    var core_show = doT.template($("#core_show").text());
+                    $("#hotcity").html(core_show(data));
+                    var core_show1 = doT.template($("#core_show1").text());
+                    $("#letter_nav").html(core_show1(data));
+                    // $("ul li:first").addClass("on")
+                    var core_show2 = doT.template($("#core_show2").text());
+                    $("#city_core").html(core_show2(data));
+                    // 
+                    var Request = new Object();
+                    Request = GetRequest();
+                    var urlcity = Request['city']
+                    if(urlcity &&urlcity!="undefined"){
+                        $(".address_span").text(urlcity)
+                    }else{
+                        $(".address_span").text("定位失败")
+                    }
+
+                    // 滑动点击
+                    var posT = $(".header").height() + $(".banner_one").height();
+                    var overstepT = $(".term").height();
+                    var heigtPt = overstepT - $(".term_nav").height();
+
+                    var domH = $(".term_nav li").height();
+                    var domY, moveY, index, item_top;
+                    $(".term_nav").on({
+                        touchstart: function (e) {
+                            startY = e.originalEvent.targetTouches[0].pageY;
+                        },
+                        touchmove: function (e) {
+                            e.preventDefault();
+                            $("body").on({
+                                touchmove: function (e) {
+                                    e.preventDefault();
+                                }
+                            });
+                            
+                            domY = $(this).offset().top;
+                            moveY = e.originalEvent.targetTouches[0].pageY;
+                            index = parseInt((moveY - domY) / domH);
+                            $(".term_nav li").eq(index).addClass("on").siblings().removeClass("on");
+                            // item_top = $('.term_box').eq(index+1).offset().top - 100;
+                            item_top = document.getElementsByClassName('term_box')[index+1].offsetTop;
+                            console.log("item_top",item_top) //
+                            $('.content').scrollTop(item_top)
+                            // $(window).scrollTop(item_top);
+                            setTimeout(function(){$('li').removeClass('on');},3000)
+                        },
+                        touchend: function () {
+                            $("body").off("touchmove")
+                        }
+                    });
+                    $(".term_nav li").click(function () {
+                        var zimuindex = ''
+                        zimuindex = $(this).index()
+
+                        console.log("首字母列表",zimuindex)
+                        $(this).addClass("on").siblings().removeClass("on");
+                        // item_top = $('.term_box').eq(zimuindex+1).offset().top - 100;
+                        item_top = document.getElementsByClassName('term_box')[zimuindex+1].offsetTop;
+                        console.log(item_top)
+                        // $(window).scrollTop(item_top)
+                        $('.content').scrollTop(item_top)
+                        setTimeout(function(){$('li').removeClass('on');},3000)
+
+
+                        // console.log("首字母列表",$(this).index())
+                        // $(this).addClass("on").siblings().removeClass("on");
+                        // var cxs = $(".term_box").eq($(this).index()).height();
+                        // item_top = $('.term_box').eq($(this).index()).offset().top - 100;
+                        // $(window).scrollTop(item_top)
+                    })
+
+                    // $(window).scroll(function () {
+                    //     $('.term_box').each(function () {
+                    //         // console.log("zimuindex",zimuindex)
+                    //         // var $details_item_top = $('.term_box').eq(zimuindex).offset().top;
+                    //         // // console.log($details_item_top)
+                    //         // // console.log(zimuindex)
+                    //         // var cs = $(".term_box").eq(zimuindex).height();
+                    //         // console.log($details_item_top+ cs - 100 + ": " + $(window).scrollTop())
+                            
+                    //         // if ($details_item_top + cs - 100 > $(window).scrollTop()) {
+                    //         //     console.log("城市列表",zimuindex)
+                    //         //     $('li').removeClass('on');
+                    //         //     $('li').eq(zimuindex).addClass('on');
+                    //         //     return false;
+                    //         // }
+
+
+                    //         var $details_item_top = $('.term_box').eq($(this).index()).offset().top;
+                    //         // console.log($details_item_top)
+                    //         // console.log($(this).index())
+                    //         var cs = $(".term_box").eq($(this).index()).height();
+                    //         console.log($details_item_top+ cs - 100 + ": " + $(window).scrollTop())
+                            
+                    //         if ($details_item_top + cs - 100 > $(window).scrollTop()) {
+                    //             console.log("城市列表",$(this).index())
+                    //             $('li').removeClass('on');
+                    //             $('li').eq($(this).index()).addClass('on');
+                    //             return false;
+                    //         }
+                    //     });
+                    // })
+                    
+                    $("#onBack").click(function(){
+                        dsBridge.call('closeWin')
+                    })
+                    $(".titi_in").bind("input propertychange",function(event){
+                        let inp_val = $(this).val();
+                        let inp_l = $(this).val().length
+                        console.log(inp_l)
+                        let citylist  = data.allcity.slice(1)
+                        let = searchList = []
+                        if(inp_l>0){
+                            $(".term").hide()
+                            for(var x=0;x<citylist.length;x++) {
+                                for(var i= 0 ;i<citylist[x].cities.length;i++){
+                                    if(inp_val == citylist[x].cities[i].name.slice(0,inp_l)){
+                                        console.log(citylist[x].cities[i].name.slice(0,inp_l))
+                                        searchList.push(citylist[x].cities[i].name)
+                                    }
+                                }
+                            }
+                        }
+                        console.log(searchList.length)
+                        if(searchList.length == 0 && inp_l!=0){
+                            console.log(888)
+                            $(".term").hide()
+                            $(".search_tit").show()
+                            $("#search_core").html("<p>没有搜索到匹配的数据</p>") 
+                        }
+                        if(searchList.length>0 && inp_l!=0){
+                            $(".search_tit").show()
+                            // $("body")
+                            let str = ''
+                            for(var z=0;z<searchList.length;z++){
+                                console.log(searchList[z])
+                                str+="<p>"+searchList[z]+"</p>"
+                            }
+
+                            $("#search_core").html(str)
+                            svc()
+                        }
+                        if(searchList.length == 0 && inp_l==0){
+                            $(".term").show()
+                            $(".search_tit").hide()
+                        }
+                    });
+                    // vue逻辑
+                function svc() {   
+                    $('p').click(function () {
+                            console.log(77)
+                            // console.log($(this).text())
+                            var cityname = $(this).text()
+                            console.log(Http.HOST)
+                            console.log(Http.API_URL.CITYLATLNG)
+                            $.ajax({
+                                url: Http.HOST + Http.API_URL.CITYLATLNG,
+                                dataType: "json",
+                                type: "post",
+                                data:{keyword: cityname},
+                                success: function (res) {
+                                    if(res.code == 0){
+                                        utils.storage.set('userLocation', {
+                                            name:cityname, 
+                                            lat: res.data.latlng.lat,
+                                            lon: res.data.latlng.lng
+                                        })
+                                        console.log(cityname)
+                                        console.log(res.data.latlng.lat,res.data.latlng.lng)
+                                        dsBridge.call('closeWin')
+                                    }
+                                }
+                            })
+                        })
+                        
+                    }
+                    svc()
+                }
+            })
+
+        })
+
+
+
+        // $(window).scroll(function () {
+        //     // $('li').removeClass('on');
+        //     $('.term_box').each(function () {
+
+        //         var $details_item_top = $('.term_box').eq($(this).index()).offset().top;
+        //         // console.log($details_item_top)
+        //         // console.log($(this).index())
+        //         var cs = $(".term_box").eq($(this).index()).height();
+        //         console.log($details_item_top+ cs - 100 + ": " + $(window).scrollTop())
+                
+        //         if ($details_item_top + cs - 100 > $(window).scrollTop()) {
+        //             console.log("城市列表",$(this).index())
+        //             $('li').removeClass('on');
+        //             // $('li').eq($(this).index()).addClass('on');
+        //             return false;
+        //         }
+        //     });
+        // })
+    </script>
+
+
+</body>
+
+</html>

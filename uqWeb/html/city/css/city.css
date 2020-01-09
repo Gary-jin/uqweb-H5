@@ -1,0 +1,91 @@
+.city {
+    display: block;
+}
+.city .city-wrapper {
+    position: fixed;
+    top: 1.7rem;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: #F7F7F7
+}
+.city .city-wrapper .cities .title {
+    height: 28px;
+    padding-left: 16px;
+    line-height: 28px;
+    background-color: #f5f5f5;
+    font-family: Helvetica;
+    font-size: 0.24rem;
+    color: #878787;
+}
+.city .city-wrapper .cities .hotulbox{
+    margin-left: 16px;
+}
+.city .city-wrapper .cities .hotcity{
+    width: 25%;
+    height: 44px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    margin: 0 16px 16px 0;
+}
+.city .city-wrapper .cities .line {
+    height: 44px;
+    padding: 0 16px;
+    line-height: 44px;
+    font-size: 0.32rem;
+    background: #fff;
+}
+.city .city-wrapper .cities .line .name {
+    display: block;
+    position: relative;
+}
+.city .city-wrapper .cities .line .name:before,
+.city .city-wrapper .cities .line .name:after {
+    display: block;
+    position: absolute;
+    border-top: 1px solid #e5e5e5;
+    left: 0;
+    width: 100%;
+    content: ' ';
+}
+.city .city-wrapper .cities .line .name:before {
+    display: none;
+    top: 0;
+}
+.city .city-wrapper .cities .line .name:after {
+    display: block;
+    bottom: 0;
+}
+.city .city-wrapper .cities .line:active {
+    background-color: #f0f0f0;
+}
+.city .city-wrapper .cities .line:last-child .name:after {
+    display: none;
+}
+.city .city-wrapper .shortcut {
+    position: absolute;
+    z-index: 30;
+    width: 40px;
+    right: 0;
+    font-family: Helvetica;
+}
+.city .city-wrapper .shortcut .letter {
+    height: 12px;
+    padding-top: 6px;
+    padding-left: 24px;
+    text-align: center;
+    font-size: 0.24rem;
+    /* color: #fa8919; */
+}
+.city .city-wrapper .shortcut .color{
+    color: rgba(217, 43, 36, 1);
+}
+@media only screen and (max-height: 600px) {
+    .city .city-wrapper .shortcut .letter {
+        padding-top: 3px;
+    }
+}
+.cities .cities-hook> div {
+    width: 70%;
+}

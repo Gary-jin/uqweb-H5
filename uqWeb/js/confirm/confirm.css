@@ -1,0 +1,95 @@
+.pop-up{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.pop-up-in{
+     opacity: 1;
+     transition: opacity linear 0.2s;
+}
+.pop-up-leave{
+     opacity: 0;
+}
+.pop-up .pop-con{
+    height: 2.7rem;
+    width: 5.9rem;
+    background:rgba(255,255,255,1);
+    border-radius:0.2rem;
+    display: flex;
+    flex-direction: column;
+}
+.pop-con-enter{
+     animation: vux-dialog-in .5s;
+    -webkit-animation: vux-dialog-in .5s;
+}
+.pop-con-leave{
+     animation: vux-dialog-out .3s;
+    -webkit-animation: vux-dialog-out .3s;
+}
+.pop-up .content{
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     flex: 1;
+     font-size:.3rem;
+     font-weight:500;
+     color:rgba(47,47,47,1);
+     line-height:.4rem;
+     padding: 0.2rem 0.2rem;
+}
+.pop-up .btn{
+    height: 0.9rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size:.34rem;
+     font-weight:500;
+     color:rgba(22,117,225,1);
+}
+.pop-up .confirm{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 50%;
+    
+}
+.pop-up .cancel{
+     display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 49%;
+    border-right: 1px solid #eee;
+    color: #777;
+}
+/* 弹窗内容进入 */
+@keyframes vux-dialog-in {
+     0% {
+         transform: scale(1.185);
+         opacity: 0;
+     }
+     100% {
+         transform: scale(1);
+         opacity: 1;
+     }
+ }
+ /* 弹窗内容离开 */
+ @keyframes vux-dialog-out {
+     0% {
+         transform: scale(1);
+         opacity: 1;
+     }
+     100% {
+         transform: scale(0.85);
+         opacity: 0;
+     }
+ }
